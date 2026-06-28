@@ -1,0 +1,6 @@
+{
+  "name": "Student Management System",
+  "description": "A comprehensive, responsive full-stack Student Management System with REST API and intuitive interactive dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

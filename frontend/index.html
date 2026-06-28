@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System</title>
+  <!-- Google Fonts: Inter & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icon Font via CDN for modern dashboard icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <i data-lucide="graduation-cap" class="logo-icon"></i>
+        <span>EduManage</span>
+      </div>
+      <div class="nav-info">
+        <span class="badge">
+          <i data-lucide="server" class="badge-icon"></i>
+          <span>API Connected</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="dashboard-container">
+    
+    <!-- Hero Header -->
+    <section class="dashboard-header">
+      <div class="header-text">
+        <h1>Student Management System</h1>
+        <p>Register, monitor, and organize student enrollments with ease and precision.</p>
+      </div>
+      <div class="header-actions">
+        <button id="open-register-btn" class="btn btn-primary">
+          <i data-lucide="user-plus"></i>
+          <span>Add New Student</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <p class="stat-label">Total Students</p>
+          <h3 id="stat-total">0</h3>
+        </div>
+        <div class="stat-icon-wrapper cs">
+          <i data-lucide="users"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <p class="stat-label">Departments</p>
+          <h3 id="stat-departments">0</h3>
+        </div>
+        <div class="stat-icon-wrapper it">
+          <i data-lucide="git-branch"></i>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <p class="stat-label">Active Enrollments</p>
+          <h3 id="stat-active">100%</h3>
+        </div>
+        <div class="stat-icon-wrapper ee">
+          <i data-lucide="activity"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <div class="content-card">
+      
+      <!-- Toolbar: Search and Filter -->
+      <div class="toolbar">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="search-input" placeholder="Search by name, email, department or ID...">
+        </div>
+        <div class="filter-box">
+          <select id="department-filter">
+            <option value="">All Departments</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="loading-indicator" class="loading-container hidden">
+        <div class="spinner"></div>
+        <p>Retrieving student database...</p>
+      </div>
+
+      <!-- Table View -->
+      <div class="table-responsive">
+        <table id="students-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Department</th>
+              <th>Year of Study</th>
+              <th>Email Address</th>
+              <th>Phone Number</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="students-tbody">
+            <!-- Populated dynamically via script.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state hidden">
+        <i data-lucide="folder-open" class="empty-icon"></i>
+        <h3>No students found</h3>
+        <p>Try adjusting your search filters or register a new student to get started.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Student Registration / Edit Modal Form -->
+  <div id="student-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">Register Student</h2>
+        <button id="close-modal-btn" class="close-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <form id="student-form" class="modal-body">
+        <!-- We keep a hidden input to distinguish Add vs Edit -->
+        <input type="hidden" id="form-action" value="create">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-id">Student ID <span class="required">*</span></label>
+            <input type="text" id="student-id" placeholder="e.g. STU101" required>
+            <small class="form-hint">Unique alpha-numeric code.</small>
+          </div>
+          <div class="form-group">
+            <label for="student-name">Full Name <span class="required">*</span></label>
+            <input type="text" id="student-name" placeholder="e.g. Jane Doe" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-department">Department <span class="required">*</span></label>
+            <select id="student-department" required>
+              <option value="" disabled selected>Select Department</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="student-year">Academic Year <span class="required">*</span></label>
+            <select id="student-year" required>
+              <option value="" disabled selected>Select Year</option>
+              <option value="1st Year">1st Year (Freshman)</option>
+              <option value="2nd Year">2nd Year (Sophomore)</option>
+              <option value="3rd Year">3rd Year (Junior)</option>
+              <option value="4th Year">4th Year (Senior)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-email">Email Address <span class="required">*</span></label>
+            <input type="email" id="student-email" placeholder="e.g. jane.doe@school.edu" required>
+          </div>
+          <div class="form-group">
+            <label for="student-phone">Phone Number <span class="required">*</span></label>
+            <input type="tel" id="student-phone" placeholder="e.g. +1 (555) 012-3456" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i>
+            <span id="submit-btn-text">Register Student</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-confirm-modal" class="modal-overlay hidden">
+    <div class="modal-card modal-confirm">
+      <div class="confirm-icon-wrapper">
+        <i data-lucide="alert-triangle"></i>
+      </div>
+      <h2>Delete Student Record?</h2>
+      <p>Are you sure you want to delete <strong id="delete-student-name">this student</strong>? This action is permanent and cannot be undone.</p>
+      <div class="confirm-footer">
+        <button id="cancel-delete-btn" class="btn btn-secondary">No, Cancel</button>
+        <button id="confirm-delete-btn" class="btn btn-danger">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Alerts Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Vanilla Script -->
+  <script src="script.js"></script>
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
